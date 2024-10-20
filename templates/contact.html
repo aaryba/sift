@@ -1,0 +1,55 @@
+{% extends 'admin/base.html' %}
+
+{% block body %}
+<script src="https://unpkg.com/htmx.org@1.5.0"></script>
+
+<div class="jumbotron">
+    <div class="text-center">
+        <h1 class="display-5">Contact Us </h1>
+
+    </div>
+</div>
+
+<div class="container mt-5" style="width: 50%; margin: 0 auto;">
+
+    <address>
+        <strong>Aaryan Balani</strong><br>
+        Cerritos, California<br>
+    </address>
+    <i class="fa fa-envelope"></i> Email Alias: <a
+        href="mailto:aaryan@balani.simplelogin.com">aaryan@balani.simplelogin.com</a>
+    <p><i class="fa fa-linkedin"></i> Linked In: <a target="_blank"
+            href="https://www.linkedin.com/in/aaryb/">linkedin.com/in/aaryb/</a>
+    </p>
+</div>
+
+<div class="container mt-5" style="width: 50%; margin: 0 auto;">
+
+    <form id="contactForm">
+
+        <div class="form-group"></div>
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" required>
+
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="message">Message</label>
+            <textarea class="form-control" id="message" rows="4" required></textarea>
+        </div>
+
+        <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+        <button type="button" class="btn btn-primary" onclick="submitContactForm()">Submit</button>
+    </form>
+</div>
+<br>
+
+
+
+
+
+{% endblock %}

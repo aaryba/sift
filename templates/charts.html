@@ -1,0 +1,403 @@
+{% extends 'admin/base.html' %}
+
+{% block body %}
+<script src="https://unpkg.com/htmx.org@1.5.0"></script>
+<!-- sift utility JS , passing current DTM to make sure browser doesn't cache JS -->
+<!-- <script src="/static/scripts/sift_scripts.js?{{ datetime.datetime.now() }}"></script> -->
+
+{% if current_user.is_authenticated %}
+
+<a onclick="unhideDivById('realtime_charts')" class="btn btn-primary" href="#" role="button">Live Student Votes</a>
+
+
+
+<div class="btn-group">
+  <button type="button" class="btn btn-secondary   dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    Trends
+  </button>
+  <div class="dropdown-menu">
+    <a class="dropdown-item" onclick="unhideDivById('trends_student_specific')" href="#">Specific Student</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" onclick="unhideDivById_and_refresh_charts('trends_school_specific')" href="#">School
+      Trend</a>
+  </div>
+
+</div>
+
+
+<div class="jumbotron_and_charts">
+
+  <div class="jumbotron">
+
+    <div class="text-center">
+      <h1 class="display-5">Charts</h1>
+      <hr class="my-4" />
+      <p>Please choose Live Student Votes for realtime voting data. Once the Snapshot is taken, this data will be
+        deleted and its summary moved to the Vote Summary History section. </p>
+      <p>Please choose a trend chart from the Trends menu option if a Snapshot of the current voting cycle has already
+        been taken.</p>
+
+    </div>
+  </div>
+</div>
+
+
+
+<div id="trends_student_specific" class="jumbotron_and_charts" style="display: none;">
+  <!--   -->
+  <div class="jumbotron">
+    <div class="text-center">
+      <h1 class="display-5">Charts - Student Specific</h1>
+      <hr class="my-4" />
+      <p>This section allows a teacher/administrator to view charts for a specific student.</p>
+
+
+      <!-- <hr class="my-1" />
+      <h5>Start Typing Email/Name of the Student :</h5>
+
+
+
+
+      <p><input type="text" id="search" placeholder="Enter name" oninput="searchUsers('true')" /></p>
+
+     
+      <div id="results">Students will show here</div> -->
+
+    </div>
+
+  </div>
+
+
+
+  <div class="separator">
+    <h2>Search Students Email</h2>
+  </div>
+
+  <div class="text-center">
+    <h5>Enter Email/ Name of the person you would like to choose :</h5>
+
+    <input type="text" id="search" placeholder="Enter name" oninput="searchUsers('true')" />
+    <style>
+      .table-container {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .table {
+        width: 50%;
+        height: 100%;
+      }
+    </style>
+
+    <!-- <ul id="results"></ul> -->
+    <div id="results" class="table-container">
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <!-- 
+            Heder Columns will be inserted here via JS
+            <tr>
+                <th>Email</th>
+                <th>Click Icons to Vote</th>
+            </tr> -->
+        </thead>
+        <tbody>
+          <!-- Rows will be inserted here via JS-->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+
+
+
+  <div class="text-center">
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Student Isolated Behavior Score" (SIBS) and Vote Category Trendline for the Last Year
+      </h4>
+      <p>This chart shows the selected student's <b>SIBS Score</b> along with the <b>Total Positive, Negative, and Needs
+          Support
+          Scores</b>
+      </p>
+    </div>
+    <img id="trend_comb" class="img-fluid"
+      src="{{ url_for('student_history_combined', student_id='0', vote_type_pos_or_neg='comb') }}"
+      alt="Student Combined Votes" />
+    <br>
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Student Negative Votes" Trendline for the Last Year</h4>
+    </div>
+    <img id="trend_negv" class="img-fluid"
+      src="{{ url_for('student_history', student_id='0', vote_type_pos_or_neg='neg') }}" alt="Student Negative Votes" />
+    <br>
+
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Student Positive Votes" Trendline for the Last Year</h4>
+    </div>
+    <img id="trend_posv" class="img-fluid"
+      src="{{ url_for('student_history', student_id='0', vote_type_pos_or_neg='pos') }}" alt="Student Positive Votes" />
+    <br>
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Student Needs Support Votes" Trendline for the Last Year</h4>
+    </div>
+    <img id="trend_ns" class="img-fluid"
+      src="{{ url_for('student_history', student_id='0', vote_type_pos_or_neg='ns') }}"
+      alt="Student Needs Support Votes" />
+    <br>
+  </div>
+</div>
+
+
+
+
+
+<div id="trends_school_specific" class="jumbotron_and_charts" style="display: none;">
+  <!-- class="jumbotron_and_charts" -->
+
+  <div class="jumbotron">
+    <div class="text-center">
+      <h1 class="display-5">Charts - School Level Trends</h1>
+
+    </div>
+  </div>
+
+
+
+  <div class="text-center">
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">Students with the Lowest "Student Isolated Behavior Score" in the Last Cycle</h4>
+      <p>This chart highlights the students who got the <b>least</b> SIBS Score in the last voting cycle (net sum of all
+        positive and
+        negative votes), indicating
+        that they may need closer supervision or intervention. </p>
+      <hr>
+      <p class="mb-0">Example: if Student A gets 4 Positive votes and 10 Negative votes, his/her SIBS score will be
+        -6.</p>
+    </div>
+
+    <img id="top_n_students_in_last_snapshot_sibs" class="img-fluid"
+      src="{{ url_for('top_n_students_in_last_snapshot', pos_neg_ns_or_sibs='sibs') }}" />
+    <br>
+
+
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"School Average Behavior Score" (SABS) Trendline for the Last Year</h4>
+      <p>The School Average Behavior Score is the mean or average of all the SIBS (Student Isolated Behavior Scores) of
+        the cycle. The chart plots the
+        SAB scores calculated in all the cycles of the last year. A <b>Decreasing SABS score </b>may indicate
+        <b>Increasing Bullying behavior</b> and the school may need
+        to increase anti-bullying programs and interventions.
+      </p>
+      <hr>
+      <p class="mb-0">Example: If SIBS for Cycle 1 were -6 (Student A) and +10 (Student B), and if
+        no other students were voted, then the school SABS for that Voting Cycle is ( -6 + 10 ) / 2 = 2 </p>
+    </div>
+    <img id="school_trend_sabs" class="img-fluid" src="{{ url_for('school_trend_sabs')}}" />
+    <br>
+
+
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Total Votes" and "Distribution of Votes" Trendline for the Last Year</h4>
+      <p>This chart shows two main things: </p>
+      <p>1. The overall participation of the students in the voting
+        process.</p>
+      <p>2. The distribution of the votes across each behavior category (Votes for
+        Bullying, Votes for Good Behavior, and Votes for Students in Need of Support).</p>
+    </div>
+    <img id="trend_school_comb" class="img-fluid" src="{{ url_for('school_history_combined') }}"
+      alt="School History Combined" />
+    <br>
+
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Total Negative Votes" Trendline for the Last Year</h4>
+    </div>
+    <img id="trend_negv_school" class="img-fluid" src="{{ url_for('school_history', vote_type_pos_or_neg='neg') }}"
+      alt="School Negative Votes" />
+    <br>
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Total Positive Votes" Trendline for the Last Year</h4>
+    </div>
+    <img id="trend_posv_school" class="img-fluid" src="{{ url_for('school_history', vote_type_pos_or_neg='pos') }}"
+      alt="School Positive Votes" />
+    <br>
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Most Positively Voted Students" in the Last Cycle</h4>
+    </div>
+    <img id="top_n_students_in_last_snapshot_pos" class="img-fluid"
+      src="{{ url_for('top_n_students_in_last_snapshot', pos_neg_ns_or_sibs='pos') }}" />
+    <br>
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Most Negatively Voted Students" in the Last Cycle</h4>
+    </div>
+    <img id="top_n_students_in_last_snapshot_neg" class="img-fluid"
+      src="{{ url_for('top_n_students_in_last_snapshot', pos_neg_ns_or_sibs='neg') }}" />
+    <br>
+
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Most Voted Students who may Need Help and Support" in the Last Cycle</h4>
+    </div>
+    <img id="top_n_students_in_last_snapshot_ns" class="img-fluid"
+      src="{{ url_for('top_n_students_in_last_snapshot', pos_neg_ns_or_sibs='ns') }}" />
+    <br>
+
+
+  </div>
+</div>
+
+
+
+
+
+<div id="realtime_charts" class="jumbotron_and_charts" style="display: none;">
+
+  <div class="jumbotron">
+    <div class="text-center">
+      <h1 class="display-5">Realtime School Level Charts - Current Cycle </h1>
+      <p class="lead">Charts Auto Refresh every {{ (chart_refresh_in_ms / 1000)|int }} seconds</p>
+      <hr class="my-4" />
+      <p>The charts below show the Most Positively Rated, Most Negatively Rated Students, and
+        Students who need most social support at school.</p>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Most Positively Voted Students" in the Current Cycle</h4>
+    </div>
+    <img id="scoreImage_scores_desc" class="img-fluid" src="{{ url_for('plot_png', desc='true') }}"
+      alt="Student Scores" />
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Most Negatively Voted Students " in the Current Cycle</h4>
+    </div>
+    <img id="scoreImage_scores_asc" class="img-fluid" src="{{ url_for('plot_png', desc='false') }}"
+      alt="Student Scores" />
+
+    <div class="alert alert-success" role="alert" style="width: 70%; margin: 0 auto;">
+      <h4 class="alert-heading">"Most Voted Students who may Need Support" in the Current Cycle</h4>
+    </div>
+    <img id="scoreImage_support" class="img-fluid" src="{{ url_for('plot_need_support_png') }}"
+      alt="Student Support Needed" />
+  </div>
+</div>
+
+
+
+
+<script>
+
+  /**************************/
+  /**
+   * Updates the trend image for a specific student given their ID.
+   * @param {number} get_trend_for_student_id - The ID of the student.
+   * This is called when user clicks green check mark
+   */
+  /**************************/
+  function getTrendImage_student(get_trend_for_student_id) {
+    //s_is_positive will have true, false as string
+
+    const timestamp = new Date().getTime();
+
+
+    const imgTrendComb = document.getElementById('trend_comb');
+    imgTrendComb.src = `/student_history_combined.png?student_id=${get_trend_for_student_id}&vote_type_pos_or_neg=comb&${timestamp}`
+
+    //<img id="trend_negv" src="{{ url_for('student_history', student_id='7',vote_type_pos_or_neg='neg') }}" alt="Student Negative Votes">
+    const imgTrendNeg = document.getElementById('trend_negv');
+    imgTrendNeg.src = `/student_history.png?student_id=${get_trend_for_student_id}&vote_type_pos_or_neg=neg&${timestamp}`
+
+    const imgTrendPos = document.getElementById('trend_posv');
+    imgTrendPos.src = `/student_history.png?student_id=${get_trend_for_student_id}&vote_type_pos_or_neg=pos&${timestamp}`
+
+    const imgTrendNeedsSup = document.getElementById('trend_ns');
+    imgTrendNeedsSup.src = `/student_history.png?student_id=${get_trend_for_student_id}&vote_type_pos_or_neg=ns&${timestamp}`
+
+
+
+    // Scroll the element into view
+    // imgTrendCom1b.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    scorllIDInView('trend_comb')
+  }
+
+
+
+  function unhideDivById_and_refresh_charts(htmlID) {
+
+    getTrendImage_school() //call to refresh images with timestamp
+    // unhideDivById('trends_school_specific')
+    unhideDivById(htmlID) //then show the page
+
+  }
+
+
+  function getTrendImage_school() {
+
+    const timestamp = new Date().getTime();
+
+    const imgTrendNeg = document.getElementById('trend_negv_school');
+    imgTrendNeg.src = `/school_history.png?vote_type_pos_or_neg=neg&${timestamp}`
+
+    const imgTrendPos = document.getElementById('trend_posv_school');
+    imgTrendPos.src = `/school_history.png?vote_type_pos_or_neg=pos&${timestamp}`
+
+
+    
+    const img_top_n_students_in_last_snapshot_pos = document.getElementById('top_n_students_in_last_snapshot_pos');
+    img_top_n_students_in_last_snapshot_pos.src = `/top_n_students_in_last_snapshot.png?pos_neg_ns_or_sibs=pos&nocache=${timestamp}`
+
+    const img_top_n_students_in_last_snapshot_neg = document.getElementById('top_n_students_in_last_snapshot_neg');
+    img_top_n_students_in_last_snapshot_neg.src = `/top_n_students_in_last_snapshot.png?pos_neg_ns_or_sibs=neg&nocache=${timestamp}`
+
+    const img_top_n_students_in_last_snapshot_ns = document.getElementById('top_n_students_in_last_snapshot_ns');
+    img_top_n_students_in_last_snapshot_ns.src = `/top_n_students_in_last_snapshot.png?pos_neg_ns_or_sibs=ns&nocache=${timestamp}`
+
+    const img_top_n_students_in_last_snapshot_sibs = document.getElementById('top_n_students_in_last_snapshot_sibs');
+    img_top_n_students_in_last_snapshot_sibs.src = `/top_n_students_in_last_snapshot.png?pos_neg_ns_or_sibs=sibs&nocache=${timestamp}`
+
+    const img_school_trend_sabs = document.getElementById('school_trend_sabs');
+    img_school_trend_sabs.src = `/school_trend_sabs.png?nocache=${timestamp}`
+
+
+    // Scroll the element into view
+    imgTrendNeg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function refreshImage() {
+    const timestamp = new Date().getTime();
+
+
+    const imgDesc = document.getElementById('scoreImage_scores_desc');
+    imgDesc.src = `/plot.png?desc=true&${timestamp}`;
+
+    const imgAsc = document.getElementById('scoreImage_scores_asc');
+    imgAsc.src = `/plot.png?desc=false&${timestamp}`;
+
+    const img2 = document.getElementById('scoreImage_support');
+    img2.src = `/plot_need_support.png?${timestamp}`;
+  }
+
+  // Options if I want to see chart refresh every few seconds
+  //setInterval(refreshImage, 2000); // Refresh every 5 seconds  
+  setInterval(refreshImage, {{ chart_refresh_in_ms }}); // Changed to get from python
+</script>
+
+
+{% else %}
+<!-- Optional -->
+<form action="{{ url_for('security.login') }}" method="get">
+  <button type="submit" class="btn btn-primary">Login</button>
+</form>
+{% endif %}
+{% endblock %}

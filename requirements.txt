@@ -1,0 +1,11 @@
+Flask==3.0.3
+Flask_Admin==1.6.1
+Flask-Security-Too==5.5.2
+flask_sqlalchemy==3.1.1
+matplotlib==3.9.2
+numpy==2.1.2
+SQLAlchemy==2.0.32
+WTForms_SQLAlchemy==0.4.1
+argon2_cffi==23.1.0
+Pillow==10.4.0
+Requests==2.32.3

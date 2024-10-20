@@ -1,0 +1,45 @@
+<!-- 
+ Applied learnings from 
+ https://ckraczkowsky.medium.com/building-a-secure-admin-interface-with-flask-admin-and-flask-security-13ae81faa05 
+ -->
+
+{% extends 'admin/master.html' %}
+{% from "security/_macros.html" import render_field_with_errors, render_field, render_field_errors, render_form_errors,
+prop_next %}
+
+
+
+
+{% block body %}
+{{ super() }}
+
+<div class="container">
+    <div class="row justify-content-center">
+
+        <div class="card">
+            <div class="card-header text-center">
+                <h1>{{ _fsdomain('Login') }}</h1>
+            </div>
+            <div class="card-body text-right">
+                <div class="well">
+                    <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
+                        {{ login_user_form.hidden_tag() }}
+                        {{ render_field_with_errors(login_user_form.email) }}
+                        {{ render_field_with_errors(login_user_form.password) }}
+                        {{ render_field(login_user_form.next) }}
+                        <div class="text-center">{{ render_field(login_user_form.submit, class="btn btn-primary") }}
+                        </div>
+                    </form>
+                    <p>
+                        Not yet signed up? Please <a href="{{ url_for('security.register') }}">register for an
+                            account</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,465 @@
+{% extends 'admin/base.html' %}
+
+{% block body %}
+<script src="https://unpkg.com/htmx.org@1.5.0"></script>
+<!-- sift utiliy JS , passing current DTM to make sure browser doesnt cache JS -->
+<!-- <script src="/static/scripts/sift_scripts.js?{{ datetime.datetime.now() }}"></script> -->
+
+
+<div class="jumbotron_and_charts">
+
+  <div class="jumbotron">
+
+    <div class="text-center">
+      <h1 class="display-5">About SIFT</h1>
+    </div>
+  </div>
+</div>
+
+
+<div style="display: flex; justify-content: center; gap: 10px" id="top">
+  <!-- <a onclick="scorllIDInView('why_the_need')" class="btn btn-secondary" href="#" role="button">The Problem</a>
+  <a onclick="scorllIDInView('what_is_sift')" class="btn btn-secondary" href="#" role="button">What is SIFT</a>
+  <a onclick="scorllIDInView('how_it_works')" class="btn btn-secondary" href="#" role="button">How It Works</a>
+  <a onclick="scorllIDInView('how_it_helps')" class="btn btn-secondary" href="#" role="button">How It Helps</a>
+  <a onclick="scorllIDInView('the_sift_algorithm')" class="btn btn-secondary" href="#" role="button">The Algorithm</a> -->
+
+  <div class="btn-group">
+    <button type="button" class="btn btn-secondary   dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+      The Problem
+    </button>
+    <div class="dropdown-menu">
+      <a class="dropdown-item" href="#why_the_need_1">Unreported Bullying</a>
+      <a class="dropdown-item" href="#why_the_need_2">Unappreciated Good
+        Behavior</a>
+      <a class="dropdown-item" href="#why_the_need_3">Socially Challenged
+        Students</a>
+    </div>
+
+  </div>
+
+
+  <!-- <a class="btn btn-secondary" href="#why_the_need_1" role="button">The Problem</a> -->
+  <a class="btn btn-secondary" href="#what_is_sift" role="button">What is SIFT</a>
+  <a class="btn btn-secondary" href="#how_it_works" role="button">How It Works</a>
+  <a class="btn btn-secondary" href="#how_it_helps" role="button">How It Helps</a>
+  <a class="btn btn-secondary" href="#statistics" role="button">Statistics</a>
+  <a class="btn btn-secondary" href="#the_sift_algorithm" role="button">The Algorithm</a>
+</div>
+
+
+
+<!-- <button type="button" class="btn btn-secondary" style="max-width: 300px; margin: 0 auto;">Why the need</button> -->
+
+<div class="separator">
+  <h2>The Problem</h2>
+</div>
+
+
+<div id="why_the_need_1" class="alert alert-secondary text-center" role="alert"
+  style="max-width: 300px; margin: 0 auto;">
+  <h6>1. Unreported Bullying</h6>
+</div><br>
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  Bullying is a real and known issue across age groups, both inside and outside schools. Based on US National Center for
+  Education Statistics (NCES) Public School
+  findings of May 2024, the following percentage of schools reported incidents daily, weekly, to at least once a month.
+</p>
+<figure class="figure" style="max-width: 60%;  margin: 0 auto; display: flex; justify-content: center;">
+  <img src="/static/images/sift_1.png" class="figure-img img-fluid rounded" alt="...">
+</figure>
+<figcaption class="figure-caption text-center">Data Source :
+
+  <a href="https://nces.ed.gov/surveys/spp/results.asp" target="_blank">
+    Student Behavior : nces.ed.gov
+  </a>
+
+</figcaption>
+</br></br>
+
+
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  Based on the data available from the National Center for Education Statistics (NCES), <b> in 2021 - 2022 around 19% of
+    12-18
+    year old students reported being bullied at school.</b>
+</p>
+<figure class="figure" style="max-width: 60%; margin: 0 auto; display: flex; justify-content: center;">
+  <img src="/static/images/sift_2.png" class="figure-img img-fluid rounded" alt="...">
+</figure>
+<figcaption class="figure-caption text-center">Source :
+
+  <a href="https://nces.ed.gov/pubs2024/2024109.pdf" target="_blank">
+    nces.ed.gov
+  </a>
+
+</figcaption>
+
+
+</br></br>
+
+
+
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  In addition, as per NCES, <b>in the 2021-22 school year, there were almost 900,000 reported incidents of violence in
+    US
+    Public Schools. </b>
+
+</p>
+</br>
+<figure class="figure" style="max-width: 60%; margin: 0 auto; display: flex; justify-content: center;">
+  <img src="/static/images/sift_3.png" class="figure-img img-fluid rounded" alt="...">
+
+</figure>
+<figcaption class="figure-caption text-center"><b>Can you even imagine how many incidents go unreported?</b>
+  <br>
+  Source :
+
+  <a href="https://nces.ed.gov/pubs2024/2024043.pdf" target="_blank">
+    nces.ed.gov
+  </a>
+</figcaption>
+</br></br>
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  <a href="#top">
+    <i class="fa fa-arrow-up"></i> Go to top
+  </a>
+</p>
+</br></br>
+
+<div id="why_the_need_2" class="alert alert-secondary text-center" role="alert"
+  style="max-width: 300px; margin: 0 auto;">
+  <h6>2. Unappreciated Good
+    Behavior</h6>
+</div><br>
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  Identifying and appreciating good student behavior is equally important. Students feel encouraged and seen, and become
+  model citizens for their peers, motivating them as well.
+  <br><br>
+  It encourages and motivates good behavior, improving the school environment. It will also have a direct impact on
+  reducing bullying, improving the mental health of students, and improving overall school scores.
+
+</p>
+<br>
+<figure class="figure" style="max-width: 60%;  margin: 0 auto; display: flex; justify-content: center;">
+  <img src="/static/images/sift_7.png" class="figure-img img-fluid rounded" alt="...">
+</figure>
+</br></br>
+
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  <a href="#top">
+    <i class="fa fa-arrow-up"></i> Go to top
+  </a>
+</p>
+</br></br>
+
+
+
+
+
+<div id="why_the_need_3" class="alert alert-secondary text-center" role="alert"
+  style="max-width: 300px; margin: 0 auto;">
+  <h6>3. Socially Challenged
+    Students</h6>
+</div><br>
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  Additionally, in most school environments, there are some students who face difficulties in mixing with others. This
+  could be due to their introverted natures, physical or mental challenges, different ethnicities, or simply because
+  they
+  may be new to the school.
+  <br><br>
+  These students feel socially isolated and may start disliking the school environment, or feel lesser than their peers.
+  In extreme cases, they may even resort to negative behaviors to feel accepted or get attention.
+  <br><br>
+  Identifying these students and helping them fit into their peer group through buddy programs or other icebreakers may
+  help improve their well being and feeling of acceptance. Encouraging students to nominate their peers who need such
+  kind
+  of support can help make teachers more aware of students’ social and emotional needs.
+
+
+</p>
+<br>
+<figure class="figure" style="max-width: 60%;  margin: 0 auto; display: flex; justify-content: center;">
+  <img src="/static/images/sift_8.png" class="figure-img img-fluid rounded" alt="...">
+</figure>
+</br>
+
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  <a href="#top">
+    <i class="fa fa-arrow-up"></i> Go to top
+  </a>
+</p>
+</br>
+
+
+
+
+
+
+<div id="what_is_sift"></div>
+<div class="separator">
+  <h2>What is SIFT: Student Interaction Feedback Tool</h2>
+</div>
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  Technology has evolved the interactions in the classroom environment and the way students learn and teachers teach.
+  It is easier to communicate, collect, and interpret information, and design ways to use that information for maximum
+  benefit.
+</p>
+<figure class="figure" style="max-width: 60%;  margin: 0 auto; display: flex; justify-content: center;">
+
+  <img src="/static/images/sift_4.png" class="figure-img img-fluid rounded" alt="...">
+
+</figure>
+
+<figcaption class="figure-caption text-center"><b>What is SIFT</b></figcaption>
+
+
+</br>
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  The Student Interaction Feedback Tool (SIFT), is designed to empower students, teachers, and administrators with an
+  <b>easy to access online platform</b> to identify, share, and act upon the negative and positive behaviors of other
+  students
+  that they
+  observe and experience in school on a daily basis.
+  It opens a notification channel between students and school authorities to help <b>identify potential good citizens,
+    students exhibiting bullying behavior, and those who may be struggling in making friends or speaking up.</b>
+</p>
+
+</br></br>
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  <a href="#top">
+    <i class="fa fa-arrow-up"></i> Go to top
+  </a>
+</p>
+</br>
+
+
+
+<div id="how_it_works"></div>
+<div class="separator">
+  <h2>How SIFT Works</h2>
+</div>
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+
+<ol style="width: 60%; margin: 0 auto;">
+  <li>
+    The app can be made available online, and to prevent misuse, can be included as a weekly or monthly routine to be
+    accessed through <b>student login</b> in a secure environment like classroom or library.
+  </li>
+  <li>
+    Once logged in, students can <b>vote for</b> any number of other students as Positive Influencers or Negative
+    Influences
+    (or those showing bullying behavior), and those around them who need Social Support.
+  </li>
+  <li>
+    With separate logins for
+    Teachers and Administrators, <b>access to the voting data</b> can be customized and restricted as
+    needed.
+  </li>
+  <li>
+    At the end of the voting period (end of the month or semester) the Administrator or Principal can <b>turn in all
+      voting
+      data for analysis</b>, by clicking the Snapshot button. Individual student and school level <b>charts are
+      generated for
+      comparison and analysis.</b>
+  </li>
+  <li>
+    These charts can help the school administration <b>take steps</b> to improve the school environment by requesting
+    specific training programs or mental health support for students who need help. The school can also publicly
+    recognize and appreciate good citizens of the school, who may otherwise go unnoticed.
+  </li>
+  <li>
+    To encourage students to vote, with each vote, <b>the voter earns some points</b> (can be customized by the
+    administrator).
+    The school can treat these “points” as <b>citizenship currency</b> that students can encash for little freebies and
+    rewards.
+  </li>
+
+
+</ol>
+</p>
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  Based on my algorithm, <b>Student Isolated Behavior Scores ( SIBS )</b> and trends and <b>School Average Behavior
+    Scores ( SABS )</b>
+  and
+  trends can
+  be
+  generated. These can help track, predict, and compare student level, school, district, and even state level behavior
+  performance.
+</p><br>
+<figure class="figure" style="max-width: 60%; margin: 0 auto; display: flex; justify-content: center;">
+  <img src="/static/images/sift_5.png" class="figure-img img-fluid rounded" alt="...">
+</figure>
+<b>
+  <figcaption class="figure-caption text-center">How SIFT Works</figcaption>
+</b>
+</br></br>
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  <a href="#top">
+    <i class="fa fa-arrow-up"></i> Go to top
+  </a>
+</p>
+
+</br>
+
+
+
+<div id="how_it_helps"></div>
+<div class="separator">
+  <h2>How does SIFT Help</h2>
+</div>
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  Easy reporting and early identification of bullying behaviors can help school authorities take appropriate
+  action more effectively. Data and charts provided by SIFT can be analyzed and used to help track and reduce
+  bullying,
+  ensuring a healthy and productive environment in schools.
+  </br></br>
+  Here are some ways in which early identification of these behaviors and using a tool like SIFT can be useful:
+
+</p>
+<br>
+<figure class="figure" style="max-width: 60%;  margin: 0 auto; display: flex; justify-content: center;">
+  <img src="/static/images/sift_6.png" class="figure-img img-fluid rounded" alt="...">
+</figure>
+<b>
+  <figcaption class="figure-caption text-center">How SIFT Helps</figcaption>
+</b>
+</br></br>
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  <a href="#top">
+    <i class="fa fa-arrow-up"></i> Go to top
+  </a>
+</p>
+
+
+</br>
+
+
+<div id="statistics"></div>
+<div class="separator">
+  <h2>Statistics</h2>
+</div>
+
+
+<ul class="text-center" style="width: 60%; margin: 0 auto;">
+  <li>
+    School-based anti-bullying programs can reduce bullying by up to 20-25% and victimization by 17-20% (Journal of
+    School
+    Psychology)
+  </li>
+  <li>
+    Schools with anti-bullying programs had 20-30% reduced reported bullying incidents in the first year itself
+    (European
+    Journal of Educational Research)
+  </li>
+  <li>
+    Bullied individuals have a higher chance of having mental health issues later in life (study published in
+    Pediatrics,
+    cited in a research on NCBI)
+  </li>
+  <li>
+    If bullying is addressed on time, children who have been bullied have significantly lower risk of mental health
+    disorders later in life (National Institute of Mental Health)
+  </li>
+  <li>
+    Schools with active anti-bullying policies have more student participation in learning and better overall scores​.
+    (National Center for Education Statistics)
+  </li>
+  <li>
+    Higher scores and better performance in school is also related to a safe and positive school environment according
+    to
+    researches provided by the CDC and Springer.
+  </li>
+
+</ul>
+<br>
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  <a href="../sources-ep">
+    <i class="fa fa-book"></i> Sources
+  </a>
+</p>
+<br>
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+
+  Supportive programs by the school and district and an app like SIFT can help in creating a safe and caring educational
+  environment. Proper and timely action can be taken to reduce bullying, helping students in need, and encouraging
+  positive behaviors.
+
+</p>
+
+
+</br></br>
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  <a href="#top">
+    <i class="fa fa-arrow-up"></i> Go to top
+  </a>
+</p>
+
+
+</br>
+
+
+
+<div id="the_sift_algorithm"></div>
+<div class="separator">
+  <h2>The SIFT Algorithm</h2>
+</div>
+
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  The algorithm analyzes voting patterns, trends, and the relationship between student behaviors and school scores to
+  provide insights.
+  These
+  insights can help predict behavior trends, student well-being, and overall school health. These scores are then
+  plotted on charts which can be useful to school districts, individual schools, and
+  students.
+  <br>
+  <br>
+  <b>Data Points Used: Student Votes</b>
+  <br>
+  <br>
+
+<ul class="text-center" style="width: 60%; margin: 0 auto;">
+  <li>Positive Leaders (students voted as positive influences)</li>
+  <li>Negative Influences (students voted as having a negative impact or showing bullying behaviors)</li>
+  <li>Students Needing Help (students identified as possibly without friends)
+</ul>
+</p>
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  <b>Steps to Generate Insights</b>
+  <br>
+</p>
+
+
+<br>
+<figure class="figure" style="max-width: 60%;  margin: 0 auto; display: flex; justify-content: center;">
+  <img src="/static/images/sift_9.png" class="figure-img img-fluid rounded" alt="...">
+</figure>
+</b>
+
+
+<br>
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  <a href="../../static/the_sift_algorithm.pdf" target="_blank">
+    <i class="fa fa-book"></i> SIFT Algorithm Details
+  </a>
+</p>
+<br>
+
+
+<p class="text-center" style="width: 60%; margin: 0 auto;">
+  <a href="#top">
+    <i class="fa fa-arrow-up"></i> Go to top
+  </a>
+</p>
+
+{% endblock %}
