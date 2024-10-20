@@ -14,7 +14,7 @@
       - [Default Password](#default-password)
 
 # Overview
-Welcom to SIFT. 
+Welcome to SIFT. 
 A Web Application designed using Python and Flask libraries. 
 
 ![Demo Video](demo.gif)
@@ -33,10 +33,10 @@ Python 3.10.14
 ```
 Suggestion : To avoid conflict with other python versions and packages, it is recommended to use anaconda environment manager.
 
-If the user is using anacoda, then this one line command can be run on the conda termnial and from inside the project folder.
+If the user is using anaconda, then this one line command can be run on the conda termnial and from inside the project folder.
 
 - This will create a new python 3.10 environment named "sift"
-- Then activate that environemnt
+- Then activate that environment
 - Then install all the application dependencies in the requirements.txt
 ```
 conda create --name sift python=3.10 -y && conda activate sift && pip install -r requirements.txt
@@ -44,7 +44,7 @@ conda create --name sift python=3.10 -y && conda activate sift && pip install -r
 
 
 ### #4: Install Dependencies 
-Dependencies can be instaled with the following command.
+Dependencies can be installed with the following command.
 
 Install Steps : 
 
@@ -57,16 +57,16 @@ Please refer to requirement.txt for complete list.
 | Package Name  |Usage   |
 |---|---|
 |Flask   |  Core web package |
-|Flask_Admin |To provide CURDL views for the main SQLite tables. |
+|Flask_Admin |To provide CURL and Delete views for the main SQLite tables. |
 |Flask-Security-Too |To allow for Role based access for admins, teachers and students |
 |flask_sqlalchemy |ORM layer for SQL Lite |
 |matplotlib |To enable charting capabilities |
 |numpy | Date manipulation for charts|
 |SQLAlchemy |SQL Lite Database access for Flask |
-|WTForms_SQLAlchemy |Enahnced handling of model views  |
-|argon2_cffi |Password Hashing algorithim |
+|WTForms_SQLAlchemy |Enhanced handling of model views  |
+|argon2_cffi |Password Hashing algorithm |
 |Pillow |To show Cursive School Logo |
-|Requests |To dowload webfont from Google |
+|Requests |To download webfont from Google |
 
 
 ### #5: Setup database
@@ -79,7 +79,7 @@ Database initialization started...
 Database Initialized, Please launch sift App by launching sift_app.py
 ```
 
-Confirm that sift.db SQLite databse file is auto-created
+Confirm that sift.db SQLite database file is auto-created
 
 We are now ready to run the app.
 
