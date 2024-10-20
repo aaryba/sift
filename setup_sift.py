@@ -127,8 +127,11 @@ def init_db_and_first_user(user_datastore):
     db.session.add(vote_category_2)
     db.session.add(vote_category_3)
 
+    # Add default points to be awarded to students
     cfg = Config(points_awarded_for_vote=1)
     db.session.add(cfg)
+
+
 
     db.session.commit()
 

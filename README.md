@@ -17,6 +17,8 @@
 Welcom to SIFT. 
 A Web Application designed using Python and Flask libraries. 
 
+![Demo Video](demo.gif)
+
 # Install and Dependencies
 
 
