@@ -5,9 +5,11 @@
     - [#3: Python Version : 3.10](#3-python-version--310)
     - [#4: Install Dependencies](#4-install-dependencies)
     - [#5: Setup database](#5-setup-database)
+- [Starting and Logging In](#starting-and-logging-in)
   - [#1. Starting the App](#1-starting-the-app)
   - [#2. Logging In](#2-logging-in)
       - [Open the link presented in flask console to login to the application](#open-the-link-presented-in-flask-console-to-login-to-the-application)
+      - [Supported Browser :](#supported-browser-)
       - [Default Logins](#default-logins)
       - [Default Password](#default-password)
 
@@ -79,6 +81,7 @@ Confirm that sift.db SQLite databse file is auto-created
 
 We are now ready to run the app.
 
+# Starting and Logging In
 
 ## #1. Starting the App
 Start the app by issuing the following command : **python sift_app.py**
@@ -100,6 +103,9 @@ Exiting: create_app
 
 #### Open the link presented in flask console to login to the application
 Example : http://127.0.0.1:5000
+
+#### Supported Browser :  
+Chrome & Edge (Latest)
 
 #### Default Logins
 | User  |Role   
