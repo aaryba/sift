@@ -1,0 +1,8 @@
+__pycache__
+instance
+*.zip
+*.db
+SQLiteStudio
+*.ps1
+.git-credentials
+app.py
