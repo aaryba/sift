@@ -115,7 +115,7 @@ Chrome & Edge (Latest)
 |admin@test.com|admin|
 |teacher@test.com|teacher|
 |adam@test.com|student|
-|braden@test.com|student|
+|brayden@test.com|student|
 
 #### Default Password
 

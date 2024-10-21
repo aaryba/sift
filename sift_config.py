@@ -3,8 +3,7 @@
 # GLOBAL CONSTANTS
 ################################
 # Set the chart refresh time in milliseconds
-# CHART_AUTO_REFRESH_MS = 600000
-CHART_REFRESH_SECONDS = 600  # Seconds
+CHART_REFRESH_SECONDS = 5  # Seconds to wait before auto refreshing realtime charts
 CHART_AUTO_REFRESH_MS = 1000*CHART_REFRESH_SECONDS
 SQLALCHEMY_ECHO = False
 DASH_ROOT_URL = '/dashboard'

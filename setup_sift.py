@@ -83,13 +83,17 @@ def create_app():
 @log_function_call
 def init_db_and_first_user(user_datastore):
 
-
     # will throw an exception if it already exists, which is fine
     db.create_all()
 
-    admin_role = user_datastore.find_or_create_role('admin')
-    teacher_role = user_datastore.find_or_create_role('teacher')
-    student_role = user_datastore.find_or_create_role('student')
+    # admin_role = user_datastore.find_or_create_role('admin',)
+    admin_role = user_datastore.find_or_create_role(
+        name='admin', description='Admin/Principal role with full Access')
+
+    teacher_role = user_datastore.find_or_create_role(
+        name='teacher', description='Teacher role with access to charts and Vote Summaries')
+    student_role = user_datastore.find_or_create_role(
+        name='student', description='Student role with access to voting and view citizenship reward points')
 
     # password is automatically hashed
     user_datastore.create_user(
@@ -99,13 +103,13 @@ def init_db_and_first_user(user_datastore):
     user_datastore.create_user(
         email=f'adam@test.com', password=DEFAULT_ADMIN_PASS, roles=['student'])
     user_datastore.create_user(
-        email=f'braden@test.com', password=DEFAULT_ADMIN_PASS, roles=['student'])
+        email=f'brayden@test.com', password=DEFAULT_ADMIN_PASS, roles=['student'])
     user_datastore.create_user(
         email=f'charlie@test.com', password=DEFAULT_ADMIN_PASS, roles=['student'])
     user_datastore.create_user(
         email=f'daniel@test.com', password=DEFAULT_ADMIN_PASS, roles=['student'])
     user_datastore.create_user(
-        email=f'ethon@test.com', password=DEFAULT_ADMIN_PASS, roles=['student'])
+        email=f'ethan@test.com', password=DEFAULT_ADMIN_PASS, roles=['student'])
     user_datastore.create_user(
         email=f'fredrick@test.com', password=DEFAULT_ADMIN_PASS, roles=['student'])
     user_datastore.create_user(
@@ -130,8 +134,6 @@ def init_db_and_first_user(user_datastore):
     # Add default points to be awarded to students
     cfg = Config(points_awarded_for_vote=1)
     db.session.add(cfg)
-
-
 
     db.session.commit()
 

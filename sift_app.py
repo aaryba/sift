@@ -1,5 +1,3 @@
-# Imports needed for school banner
-# this brings up HOME link in adminm
 from PIL import Image, ImageDraw, ImageFont
 from flask import send_file
 import requests
@@ -15,7 +13,7 @@ import datetime as dtm
 import io
 import os
 import uuid
-from flask import Flask, render_template, request, session, redirect, jsonify, url_for, Response, flash
+from flask import Flask, render_template, request, session, redirect, jsonify, url_for, Response, flash, send_from_directory
 from flask_security import Security, SQLAlchemyUserDatastore, current_user, login_required, roles_required, roles_accepted, user_registered
 from flask_admin import Admin, AdminIndexView, expose, BaseView
 from flask_admin import helpers as admin_helpers  # needed for better login pages
@@ -28,13 +26,28 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
-import matplotlib.ticker as mticker
+import matplotlib.ticker as ticker
 # Use the 'Agg' backend for non-GUI rendering, fixes matplotlib warning related to threads
 matplotlib.use('Agg')
-# for date plotting on history chhart on x axis
+# for date plotting on history chart on x axis
 
 
+# This function does : "Overrides the default Flask Admin behavior"
 class MyAdminIndexView(AdminIndexView):
+    """
+    Customized AdminIndexView for Flask Admin.
+
+    Attributes:
+    - index: Renders custom_base.html as the index page.
+    - is_visible: Returns False to hide the default home link.
+    """
+    @expose('/')
+    def index(self):
+        return self.render('custom_base.html')
+
+    def is_visible(self):
+        return False
+
     @expose('/')
     def index(self):
         return self.render('custom_base.html')
@@ -46,6 +59,12 @@ class MyAdminIndexView(AdminIndexView):
 
 @log_function_call
 def create_app():
+    """
+    Create and configure the Flask application along with the user datastore.
+
+    Returns:
+        tuple: A tuple containing the Flask application and the user datastore.
+    """
     SALT = 'my_precious_two'
     app = Flask(__name__)
 
@@ -65,7 +84,7 @@ def create_app():
     app.config['SECURITY_PASSWORD_HASH'] = 'argon2'
 
     app.config['SECURITY_REGISTERABLE'] = True
-    # flask-sec can auto redirec user to this page on login
+    # flask-sec can auto redirect user to this page on login
     app.config['SECURITY_POST_LOGIN_VIEW'] = 'dashboard'
     app.config['SECURITY_POST_LOGOUT_VIEW'] = 'dashboard'
     # app.config['SECURITY_POST_REGISTER_VIEW'] = 'welcome'
@@ -132,7 +151,7 @@ def create_app():
     @app.context_processor
     def inject_points():
         # return
-        local_awared_points = 0
+        local_awarded_points = 0
         # old_points = Points.query.filter_by(awarded_to_id = vote.voter_id).first()
         if current_user.is_authenticated:
             db_points_obj = Points.query.filter_by(
@@ -140,11 +159,11 @@ def create_app():
             if db_points_obj:
                 logger.info(
                     f"DB Points: {db_points_obj}, {db_points_obj.awarded_points}")
-                local_awared_points = db_points_obj.awarded_points
-        logger.info(f"Points: {local_awared_points}")
-        return dict(awared_points=local_awared_points)
+                local_awarded_points = db_points_obj.awarded_points
+        logger.info(f"Points: {local_awarded_points}")
+        return dict(awarded_points=local_awarded_points)
 
-    @app.route('/')
+    @ app.route('/')
     def index():
         try:
             return redirect(DASH_ROOT_URL)
@@ -155,12 +174,12 @@ def create_app():
             return f'You r at home as anonymous user<form action="/login" method="GET"><input type="submit" value="Login"></form></br><form action="{ DASH_ROOT_URL }" method="GET"><input type="submit" value="Go Admin"></form>'
             # sys.ext()
         # else:
-        #     return f'You r at home as anynomous user'
+        #     return f'You r at home as anyms user'
 
-    # During registration, check if pre-apprvoed users - with email - are allowed to register
+    # During registration, check if pre-approved users - with email - are allowed to register
 
-    @log_function_call
-    @app.before_request
+    @ log_function_call
+    @ app.before_request
     def before_request():
         if request.endpoint == 'security.register' and request.method == 'POST':
             email = request.form.get('email')
@@ -177,9 +196,8 @@ def create_app():
                 return redirect(url_for('security.register'))
 
     # after user is registered, lets assign them a role per the uploaded csv file
-
-    @log_function_call
-    @user_registered.connect_via(app)
+    @ log_function_call
+    @ user_registered.connect_via(app)
     def user_registered_sighandler(app, user, **extra):
 
         found_user = AllowedStudentsAndStaff.query.filter_by(
@@ -191,11 +209,10 @@ def create_app():
         user_datastore.add_role_to_user(user, default_role)
         db.session.commit()
 
-    @app.route('/search')
-    @roles_accepted('admin', 'teacher', 'student')
+    @ app.route('/search')
+    @ roles_accepted('admin', 'teacher', 'student')
     def search():
         search_query = request.args.get('query', '')
-
 
 
         # do a join to get users that have role students
@@ -208,12 +225,11 @@ def create_app():
             .all()
         )
 
-        
         return jsonify([{'id': user.id, 'email': user.email} for user in users])
 
-    @log_function_call
-    @app.route('/upload_students_and_staff', methods=['POST'])
-    @roles_accepted('admin')
+    @ log_function_call
+    @ app.route('/upload_students_and_staff', methods=['POST'])
+    @ roles_accepted('admin')
     def upload_students_and_staff():
         file = request.files.get('file')
         if not file:
@@ -228,7 +244,7 @@ def create_app():
             # Delete all rows
             db.session.query(AllowedStudentsAndStaff).delete()
             logger.info(
-                f'Doing soft delete of allwed students and staff before importing new data')
+                f'Doing soft delete of allowed students and staff before importing new data')
 
             for row in csv_input:
                 logger.info(f'row[0]: "{row[0]}" - row[1]: "{row[1]}"')
@@ -259,75 +275,9 @@ def create_app():
         except:
             return jsonify({'status': 'error', 'message': 'Uploaded File is not a CSV or its corrupt!'})
 
-    # pip install plotly kaleido
-    # import plotly.graph_objects as go
-    # from flask import send_file
-    # @app.route('/speedometer.png')
-    # @roles_accepted('admin','teacher')
-    # def speedometer():
-
-    #     # Create simple speedometer chart
-    #     # fig = go.Figure(go.Indicator(
-    #     #         mode="gauge+number",
-    #     #         value=70,
-    #     #         title={'text': "Speed"},
-    #     #         gauge={
-    #     #             'axis': {'range': [0, 100]},
-    #     #             'bar': {'color': "darkblue"},
-    #     #             'steps': [
-    #     #                 {'range': [0, 50], 'color': "lightgray"},
-    #     #                 {'range': [50, 100], 'color': "gray"}
-    #     #             ],
-    #     #             'threshold': {
-    #     #                 'line': {'color': "red", 'width': 4},
-    #     #                 'thickness': 0.75,
-    #     #                 'value': 90
-    #     #             }
-    #     #         }
-    #     #     ))
-
-    #     # Create the enhanced speedometer chart
-    #     fig = go.Figure(go.Indicator(
-    #         mode="gauge+number+delta",
-    #         value=70,
-    #         title={'text': "Speed", 'font': {'size': 24}},
-    #         delta={'reference': 50, 'increasing': {'color': "RebeccaPurple"}},
-    #         gauge={
-    #             'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "darkblue"},
-    #             'bar': {'color': "darkblue"},
-    #             'bgcolor': "white",
-    #             'borderwidth': 2,
-    #             'bordercolor': "gray",
-    #             'steps': [
-    #                 {'range': [0, 50], 'color': 'cyan'},
-    #                 {'range': [50, 100], 'color': 'royalblue'}
-    #             ],
-    #             'threshold': {
-    #                 'line': {'color': "red", 'width': 4},
-    #                 'thickness': 0.75,
-    #                 'value': 90
-    #             }
-    #         }
-    #     ))
-#
-#
-#
-#
-
-    #     fig.update_layout(
-    #         paper_bgcolor="lavender",
-    #         font={'color': "darkblue", 'family': "Arial"}
-    #     )
-    #     # Convert the chart to a PNG image
-    #     img_bytes = fig.to_image(format="png", engine="kaleido")
-    #     img_io = io.BytesIO(img_bytes)
-    #
-    #     # Return the image as a response
-    #     return send_file(img_io, mimetype='image/png')
-
-    @log_function_call
-    @app.route('/student_history_combined.png')
-    @roles_accepted('admin', 'teacher')
+    @ log_function_call
+    @ app.route('/student_history_combined.png')
+    @ roles_accepted('admin', 'teacher')
     def student_history_combined():
 
         student_id_to_lookup = int(request.args.get(
@@ -345,13 +295,6 @@ def create_app():
         scores_ns = []
         scores_sibs = []
 
-        # is_positive = False
-
-        # if vote_type_pos_or_neg == 'pos':
-        #     is_positive = True
-        # else:
-        #     is_positive = False
-
         summaries = (
             VoteSummaryHistory.query
             # Filter by specific voted_for_id
@@ -363,7 +306,7 @@ def create_app():
         if len(summaries) > 0:
             # create the X,Y data needed for the plot
             logger.info(
-                f"Summaries Results Lenght from DB: {len(summaries)} for student email: {summaries[0].voted_for.email}")
+                f"Summaries Results Length from DB: {len(summaries)} for student email: {summaries[0].voted_for.email}")
         else:
             logger.warning(
                 f"No summaries found for student email: {student_id_to_lookup}")
@@ -380,7 +323,6 @@ def create_app():
             scores_sibs.append(summary.vote_pos_negative_sum)
 
         # Create a figure and axis object
-        # fig, ax = plt.subplots(figsize=(10, 6))
         fig, ax = plt.subplots()
 
         if len(summaries) > 0:
@@ -432,9 +374,9 @@ def create_app():
         return Response(buf.getvalue(), mimetype='image/png')
         # return send_file(buf, mimetype='image/png')
 
-    @log_function_call
-    @app.route('/student_history.png')
-    @roles_accepted('admin', 'teacher')
+    @ log_function_call
+    @ app.route('/student_history.png')
+    @ roles_accepted('admin', 'teacher')
     def student_history():
 
         student_id_to_lookup = int(request.args.get(
@@ -449,13 +391,6 @@ def create_app():
         dates = []
         scores = []
 
-        # is_positive = False
-
-        # if vote_type_pos_or_neg == 'pos':
-        #     is_positive = True
-        # else:
-        #     is_positive = False
-
         summaries = (
             VoteSummaryHistory.query
             # Filter by specific voted_for_id
@@ -467,7 +402,7 @@ def create_app():
         if len(summaries) > 0:
             # create the X,Y data needed for the plot
             logger.info(
-                f"Summaries Results Lenght from DB: {len(summaries)} for student email: {summaries[0].voted_for.email}")
+                f"Summaries Results Length from DB: {len(summaries)} for student email: {summaries[0].voted_for.email}")
         else:
             logger.warning(
                 f"No summaries found for student email: {student_id_to_lookup}")
@@ -538,9 +473,9 @@ def create_app():
         return Response(buf.getvalue(), mimetype='image/png')
         # return send_file(buf, mimetype='image/png')
 
-    @log_function_call
-    @app.route('/school_history.png')
-    @roles_accepted('admin', 'teacher')
+    @ log_function_call
+    @ app.route('/school_history.png')
+    @ roles_accepted('admin', 'teacher')
     def school_history():
 
         # student_id_to_lookup = int(request.args.get('student_id', default="1")) #integer
@@ -549,13 +484,6 @@ def create_app():
 
         # logger.info(f"student_id_to_lookup: {student_id_to_lookup}")
         logger.info(f"vote_type_pos_or_neg: {vote_type_pos_or_neg}")
-
-        # Sample data
-        # import numpy as np
-        # from matplotlib.dates import date2num
-        # import datetime
-        # dates = [datetime.datetime(2023, 9, i) for i in range(1, 11)]
-        # scores = [15, 17, 14, 20, 19, 18, 22, 25, 23, 30]
 
         # real data
         dates = []
@@ -591,10 +519,7 @@ def create_app():
                 list_of_vote_summaries_for_snapshot = db.session.query(
                     VoteSummaryHistory.snapshot_id,
                     VoteSummaryHistory.voted_for_snap_date,
-                    VoteSummaryHistory.vote_positive_count,
-                    # VoteSummaryHistory.vote_negative_count,
-                    # VoteSummaryHistory.vote_pos_negative_sum,
-                    # VoteSummaryHistory.vote_needs_support_count
+                    VoteSummaryHistory.vote_positive_count
                 ).filter(
                     # only look at data from last year
                     VoteSummaryHistory.snapshot_id == snapshot_id[0]
@@ -621,10 +546,7 @@ def create_app():
                 list_of_vote_summaries_for_snapshot = db.session.query(
                     VoteSummaryHistory.snapshot_id,
                     VoteSummaryHistory.voted_for_snap_date,
-                    # VoteSummaryHistory.vote_positive_count,
                     VoteSummaryHistory.vote_negative_count,
-                    # VoteSummaryHistory.vote_pos_negative_sum,
-                    # VoteSummaryHistory.vote_needs_support_count
                 ).filter(
                     # only look at data from last year
                     VoteSummaryHistory.snapshot_id == snapshot_id[0]
@@ -700,9 +622,9 @@ def create_app():
         return Response(buf.getvalue(), mimetype='image/png')
         # return send_file(buf, mimetype='image/png')
 
-    @log_function_call
-    @app.route('/school_history_combined.png')
-    @roles_accepted('admin', 'teacher')
+    @ log_function_call
+    @ app.route('/school_history_combined.png')
+    @ roles_accepted('admin', 'teacher')
     def school_history_combined():
 
         # student_id_to_lookup = int(request.args.get('student_id', default="1")) #integer
@@ -836,9 +758,9 @@ def create_app():
         return Response(buf.getvalue(), mimetype='image/png')
         # return send_file(buf, mimetype='image/png')
 
-    @log_function_call
-    @app.route('/school_trend_sabs.png')
-    @roles_accepted('admin', 'teacher')
+    @ log_function_call
+    @ app.route('/school_trend_sabs.png')
+    @ roles_accepted('admin', 'teacher')
     def school_trend_sabs():
 
         # real data
@@ -861,7 +783,7 @@ def create_app():
         logger.info("unique_snapshot_ids: " +
                     " -- ".join([str(item) for item in unique_snapshot_ids]))
 
-        # this is where I append spapshot dates and average school scores
+        # this is where I append snapshot dates and average school scores
         list_of_x_dates = []
         list_of_y_sabs = []
         # Get
@@ -888,7 +810,7 @@ def create_app():
             logger.info(
                 f"list_of_vote_summaries_for_snapshot : Len : {len(list_of_vote_summaries_for_snapshot)}: {list_of_vote_summaries_for_snapshot}")
 
-            # Lets now loop throu all Student SIBS scores in this cycle and calculate average
+            # Lets now loop through all Student SIBS scores in this cycle and calculate average
             sum_of_all_sibs_in_snapshot = 0
             sabs_for_snapshot = 0
             for span_student_row_in_cycle in list_of_vote_summaries_for_snapshot:
@@ -896,7 +818,7 @@ def create_app():
                     f"Snap {span_student_row_in_cycle[0]}  : SIBS for User ID '{span_student_row_in_cycle[1]} : {span_student_row_in_cycle[3]}")
                 sum_of_all_sibs_in_snapshot += span_student_row_in_cycle[3]
 
-            # calculate averge of all SIBS in a Cycle
+            # calculate average of all SIBS in a Cycle
             if sum_of_all_sibs_in_snapshot != 0:
                 sabs_for_snapshot = sum_of_all_sibs_in_snapshot / \
                     len(list_of_vote_summaries_for_snapshot)
@@ -967,13 +889,9 @@ def create_app():
         return Response(buf.getvalue(), mimetype='image/png')
         # return send_file(buf, mimetype='image/png')
 
-    @app.route('/plot.png')
-    @roles_accepted('admin', 'teacher')
+    @ app.route('/plot.png')
+    @ roles_accepted('admin', 'teacher')
     def plot_png():
-        # Sample data
-        # students = ['Alice', 'Bob', 'Charlie', 'David', 'Eve']
-        # scores = [85, 90, 78, 92, 88]
-
         # real data
         students = []
         scores = []
@@ -1021,12 +939,9 @@ def create_app():
         return Response(buf.getvalue(), mimetype='image/png')
         # return send_file(buf, mimetype='image/png')
 
-    @app.route('/plot_need_support.png')
-    @roles_accepted('admin', 'teacher')
+    @ app.route('/plot_need_support.png')
+    @ roles_accepted('admin', 'teacher')
     def plot_need_support_png():
-        # Sample data
-        # students = ['Alice', 'Bob', 'Charlie', 'David', 'Eve']
-        # scores = [85, 90, 78, 92, 88]
 
         # real data
         students = []
@@ -1060,12 +975,9 @@ def create_app():
         return Response(buf.getvalue(), mimetype='image/png')
         # return send_file(buf, mimetype='image/png')
 
-    @app.route('/top_n_students_in_last_snapshot.png')
-    @roles_accepted('admin', 'teacher')
+    @ app.route('/top_n_students_in_last_snapshot.png')
+    @ roles_accepted('admin', 'teacher')
     def top_n_students_in_last_snapshot():
-        # Sample data
-        # students = ['Alice', 'Bob', 'Charlie', 'David', 'Eve']
-        # scores = [85, 90, 78, 92, 88]
 
         # real data
         students = []
@@ -1125,13 +1037,6 @@ def create_app():
             logger.info(
                 f"list_of_vote_summaries_for_snapshot : {list_of_vote_summaries_for_snapshot}")
 
-            #     VoteSummaryHistory.snapshot_id,
-            #     VoteSummaryHistory.voted_for_snap_date,
-            #     VoteSummaryHistory.vote_positive_count,
-            #     # VoteSummaryHistory.vote_negative_count,
-            #     # VoteSummaryHistory.vote_pos_negative_sum,
-            #     # VoteSummaryHistory.vote_needs_support_count
-
             label = None
             for summary_hist_record in list_of_vote_summaries_for_snapshot:
                 logger.info(f"summary_hist_record  :{summary_hist_record}")
@@ -1151,7 +1056,7 @@ def create_app():
                 elif pos_neg_ns_or_sibs == 'sibs':
                     scores.append(
                         summary_hist_record.vote_pos_negative_sum)  # aka SIBS
-                    label = "Lowest Student Isolated Behavior Score"
+                    label = "Lowest Student Individual Behavior Score"
 
             if len(scores) > 0:
 
@@ -1178,7 +1083,7 @@ def create_app():
         return Response(buf.getvalue(), mimetype='image/png')
         # return send_file(buf, mimetype='image/png')
 
-    @app.route('/funny_chart.png')
+    @ app.route('/funny_chart.png')
     def funny_chart():
         # Sample data
         x = ['aary', 'dad', 'mom']
@@ -1198,8 +1103,8 @@ def create_app():
 
         return send_file(img, mimetype='image/png')
 
-    @app.route('/resetvotes', methods=['GET'])
-    @roles_accepted('admin')
+    @ app.route('/resetvotes', methods=['GET'])
+    @ roles_accepted('admin')
     def resetvotes():
         # ORM method to delete all records
         db.session.query(VoteSummary).delete()
@@ -1208,12 +1113,11 @@ def create_app():
         db.session.query(Points).delete()
         db.session.commit()  # Commit the change
 
-
         return "Success! Votes, Summary, Summary History, and Points have been Deleted."
 
-    @log_function_call
-    @app.route('/createsnapshot', methods=['GET'])
-    @roles_accepted('admin')
+    @ log_function_call
+    @ app.route('/createsnapshot', methods=['GET'])
+    @ roles_accepted('admin')
     def createsnapshot():
         # Step1: We copy Summary to SummaryHistory
         # Step2: If user has even voted ones, we reward them the credit points as defined in config
@@ -1285,10 +1189,9 @@ def create_app():
         db.session.query(Vote).delete()  # temporarily comment out to test
         db.session.commit()  # Commit the change
 
-        # TODO : Show a dialog to user
         return "Success: Current Votes Snapshot has been taken and the system is ready for a new Voting Cycle."
 
-    @app.route('/contact', methods=['GET'])
+    @ app.route('/contact', methods=['GET'])
     def contact():
         name = request.args.get('name')
         email = request.args.get('email')
@@ -1303,8 +1206,8 @@ def create_app():
         db.session.commit()
         return "Thanks for contacting us. We will get back to you shortly."
 
-    @app.route('/vote', methods=['POST'])
-    @roles_accepted('admin', 'teacher', 'student')
+    @ app.route('/vote', methods=['POST'])
+    @ roles_accepted('admin', 'teacher', 'student')
     def vote():
         user_selected_id = int(request.form.get('user_selected_id'))
         vote_selected_cat_type = int(request.form.get('vote_type'))
@@ -1463,38 +1366,13 @@ def create_app():
                     updateVoteSummaryObject(
                         vote_summary_obj_before, vote_selected_cat_type,  b_is_deleted=True)
                     db.session.commit()
-                # else :
 
-                #     if vote_obj_before_needs_supp.vote_category_id == vote_selected_cat_type :
-                #         changed_saved_failed_ignored = 'Ignored, as you have already voted for this student.'
-                #         logger.info(changed_saved_failed_ignored)
-                #     else :
-
-                #         vote = Vote(voter_id=current_user.id, voted_for_id=user_selected_id, vote_category_id=vote_selected_cat_type)
-                #         db.session.add(vote)
-
-                #         changed_saved_failed_ignored = 'Saved'
-                #         # update VoteSummary
-                #         updateVoteSummaryObject( vote_summary_obj_before, vote_selected_cat_type )
-
-                #         db.session.commit() #will also update VoteSummary automatically, sqla tracks changes
-
-                #         logger.info(changed_saved_failed_ignored)
-
-        # vote = Vote(voter_id=current_user.id, voted_for_id=user_id, vote_category_id=vote_type)
-        # db.session.add(vote)
-        # db.session.commit()
-
-        # logger.info(f'Your vote for user {user_id} with vote type {vote_type} was recorded.')
-        # return redirect(url_for('index'))
         return f'Your vote for "{user_selected_email}" was {changed_saved_failed_ignored}'
 
-    @log_function_call
-    @app.route('/cursive/<text>')
+    @ log_function_call
+    @ app.route('/cursive/<text>')
     def generate_cursive_text_image(text):
 
-        # TODO 5 : Should we change font
-        # URL of the Google Font
         # google_fonts_url = "https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap"
         # font_name = "GreatVibes-Regular.ttf"
         font_url = "https://github.com/google/fonts/raw/main/ofl/greatvibes/GreatVibes-Regular.ttf"
@@ -1541,8 +1419,16 @@ def create_app():
     return app, user_datastore
 
 
-@log_function_call
+@ log_function_call
 def updateVoteSummaryObject(vote_summary_obj_before, i_vote_category_id, b_is_changed_sides=False, b_is_deleted=False):
+    '''
+    Update the vote summary object based on the user's vote category and actions taken.
+    Parameters:
+        vote_summary_obj_before (object): The vote summary object before the update.
+        i_vote_category_id (int): The ID of the vote category.
+        b_is_changed_sides (bool, optional): Flag indicating if the user changed sides. Defaults to False.
+        b_is_deleted (bool, optional): Flag indicating if the vote is deleted. Defaults to False.
+    '''
 
     # work with local vars
     i_vote_value_ps = 0

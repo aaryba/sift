@@ -20,18 +20,12 @@ from sift_models import User, Role, VoteCategory, VoteSummary, VoteSummaryHistor
 from sift_config import *
 
 
-
-
-###############################
-# Flask Admin Code - START
-###############################
-
 class AdminAccessOnlyView(ModelView):
 
     # to hide fs_uniquifier from list view for all views
     column_exclude_list = ['fs_uniquifier']
 
-    #  Ensure only authenticated and admin are allwed to access
+    #  Ensure only authenticated and admin are allowed to access
 
     def is_accessible(self):
 
@@ -40,8 +34,6 @@ class AdminAccessOnlyView(ModelView):
             return False
 
         # Check if the user has any of the required roles
-        # required_roles = {'admin'}
-        # required_roles = {'admin','teacher'}
         required_roles = {'admin'}
         # Assuming current_user.roles returns a list or set of roles
         user_roles = set(current_user.roles)
@@ -54,7 +46,7 @@ class TeacherAccessOnlyView(ModelView):
     # to hide fs_uniquifier from list view for all views
     column_exclude_list = ['fs_uniquifier']
 
-    #  Ensure only authenticated and admin are allwed to access
+    #  Ensure only authenticated and admin are allowed to access
 
     def is_accessible(self):
 
@@ -72,10 +64,10 @@ class TeacherAccessOnlyView(ModelView):
 
 
 class RoleView(AdminAccessOnlyView):
-    can_export = True
-    can_create = True
-    can_edit = True
-    can_delete = True
+    can_export = False
+    can_create = False
+    can_edit = False
+    can_delete = False
 
 
 class UserAdmin(AdminAccessOnlyView):
@@ -105,27 +97,21 @@ class UserAdmin(AdminAccessOnlyView):
             'widget': Select2Widget(multiple=True),
             'get_label': 'name'
         },
-        # 'password': {
-        #     # 'get_label': 'password',
-        #     'allow_blank': False,
-        # },
-
     }
 
     def on_model_change(self, form, model, is_created):
-        ...
         # Ensure the correct hashed password is used when saving
         # getting forms ID and saving it in the model
         if is_created or form.password.data:
 
             pass_from_form = form.password.data
 
-            # neded if we use bcrypt
+            # needed if we use bcrypt
             # if not (pass_from_form.lower().startswith('$2b$12$'.lower()) and len(pass_from_form) == 60):
-            # neded if we use argon
+            # needed if we use argon
             if not pass_from_form.lower().startswith('$argon2id$'):
                 print(f'*********************************************')
-                print(f'User enteres plain pass, so lets hash it')
+                print(f'User enters plain pass, so lets hash it')
                 print(f'form.password : {form.password.data}')
                 model.password = hash_password(form.password.data)
                 print(verify_password(form.password.data, model.password))
@@ -135,11 +121,9 @@ class UserAdmin(AdminAccessOnlyView):
             print(f'form.password.data : {form.password.data}')
             print(f'model.password : {model.password}')
             print(f'*********************************************')
-            # model.voted_for_id = form.voted_for.data.id
-            # model.vote_category_id = form.vote_category.data.id
 
 
-class VoteAdmin(TeacherAccessOnlyView):
+class VoteAdmin(AdminAccessOnlyView):
     can_export = True
     can_create = True
     can_edit = True
@@ -154,6 +138,10 @@ class VoteAdmin(TeacherAccessOnlyView):
         'voted_for': QuerySelectField,
         'vote_category': QuerySelectField
     }
+
+    column_searchable_list = ['voted_for_id']
+    column_filters = ['voter_id', 'voted_for_id', 'vote_category_id']
+    column_list = ['vote_date', 'voter', 'voted_for', 'vote_category']
 
     # Define how the dropdown should populate its choices
     form_args = {
@@ -191,9 +179,9 @@ class VoteAdmin(TeacherAccessOnlyView):
 
 class VoteSummaryAdmin(TeacherAccessOnlyView):
     can_export = True
-    can_create = True
-    can_edit = True
-    can_delete = True
+    can_create = False
+    can_edit = False
+    can_delete = False
 
     # which columns to display
     form_columns = ['voted_for', 'vote_positive_count',
@@ -224,9 +212,9 @@ class VoteSummaryAdmin(TeacherAccessOnlyView):
 
 class VoteSummaryHistoryAdmin(TeacherAccessOnlyView):
     can_export = True
-    can_create = True
-    can_edit = True
-    can_delete = True
+    can_create = False
+    can_edit = False
+    can_delete = False
 
     # which columns to display
     form_columns = ['voted_for', 'voted_for_snap_date', 'vote_positive_count',
@@ -257,9 +245,9 @@ class VoteSummaryHistoryAdmin(TeacherAccessOnlyView):
 
 class VoteCategoryAdmin(AdminAccessOnlyView):
     can_export = False
-    can_create = True
-    can_edit = True
-    can_delete = True
+    can_create = False
+    can_edit = False
+    can_delete = False
     # Display a dropdown for roles in the form
     form_columns = ['name', 'description']
 
@@ -299,14 +287,12 @@ class PointTeacherView(TeacherAccessOnlyView):
 
 class ContactAdminView(AdminAccessOnlyView):
     can_export = True
-    can_create = True
-    can_edit = True
+    can_create = False
+    can_edit = False
     can_delete = True
 
     column_searchable_list = ['email']
     column_filters = ['email']
-    # Display a dropdown for roles in the form
-    # form_columns = ['name', 'description']
 
     form_columns = ['name', 'email', 'message', 'date_of_contact']
 
@@ -319,8 +305,6 @@ class AllowedStudentsAndStaffAdminView(AdminAccessOnlyView):
 
     column_searchable_list = ['email']
     column_filters = ['email']
-    # Display a dropdown for roles in the form
-    # form_columns = ['name', 'description']
 
     form_columns = ['email', 'role', 'role_id']
 
@@ -333,8 +317,6 @@ class AllowedStudentsAndStaffAdminView(AdminAccessOnlyView):
 class MyCustomView_Charts(BaseView):
     @expose('/')  # default view is needed
     def index(self):
-        # return self.render('charts.html', chart_refresh_in_ms=2000)
-
         return self.render('charts.html', chart_refresh_in_ms=CHART_AUTO_REFRESH_MS)
 
     def is_accessible(self):
@@ -354,10 +336,6 @@ class MyCustomView_Charts(BaseView):
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('security.login'))
 
-    # @expose('/custom-link')
-    # def custom_link(self):
-    #     return redirect(url_for('chartpage')) # this is the function name, will get URL for it
-
 
 class MyCustomView_About(BaseView):
     @expose('/')  # default view is needed
@@ -376,7 +354,6 @@ class MyCustomView_Sources(BaseView):
 class ContactView(BaseView):
     @expose('/')  # default view is needed
     def index(self):
-        # return self.render('charts.html', chart_refresh_in_ms=2000)
 
         return self.render('contact.html')
 
@@ -384,7 +361,6 @@ class ContactView(BaseView):
 class AaryDemoView(BaseView):
     @expose('/')  # default view is needed
     def index(self):
-        # return self.render('charts.html', chart_refresh_in_ms=2000)
 
         return self.render('demo.html', chart_refresh_in_ms=CHART_AUTO_REFRESH_MS)
 
@@ -404,7 +380,6 @@ class AaryDemoView(BaseView):
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('security.login'))
-# def register_admin_views(flask_app : Flask):
 
 
 def register_admin_views(admin: Admin):
@@ -420,7 +395,7 @@ def register_admin_views(admin: Admin):
     admin.add_view(MyCustomView_Sources(name='Sources', endpoint='sources-ep',
                    menu_icon_type='fa', menu_icon_value='fa-link'))
 
-    # Table views
+    # Add Table views : Vote Category
     admin.add_view(VoteAdmin(Vote, db.session, category='Vote',
                    menu_icon_type='fa', menu_icon_value='fa-sticky-note'))
     admin.add_view(VoteSummaryAdmin(
@@ -433,6 +408,7 @@ def register_admin_views(admin: Admin):
         VoteCategory, db.session, category='Vote',
                    menu_icon_type='fa', menu_icon_value='fa-bars'))
 
+    # Add Table views : Settings Category
     admin.add_view(ConfigAdminView(Config, db.session, category='Settings',
                    menu_icon_type='fa', menu_icon_value='fa-cogs'))
     admin.add_view(PointTeacherView(Points, db.session, category='Settings',
@@ -440,12 +416,12 @@ def register_admin_views(admin: Admin):
     admin.add_view(ContactAdminView(
         ContactRequest, db.session, category='Settings',
                    menu_icon_type='fa', menu_icon_value='fa-comments-o'))
+
+    # Add Table views : Registration Info Category
     admin.add_view(RoleView(Role, db.session, category='Registration Info',
                    menu_icon_type='fa', menu_icon_value='fa-id-badge'))
-
     admin.add_view(UserAdmin(User, db.session,
                    category='Registration Info', menu_icon_type='fa', menu_icon_value='fa-user-circle-o'))
-
     admin.add_view(AllowedStudentsAndStaffAdminView(
         AllowedStudentsAndStaff, db.session, category='Registration Info', menu_icon_type='fa', menu_icon_value='fa-shield'))
 
@@ -454,22 +430,3 @@ def register_admin_views(admin: Admin):
 
     # admin.add_view(AaryDemoView(name='Demo', endpoint='demo-ep',
     #                menu_icon_type='fa', menu_icon_value='fa-bar-chart'))
-
-    # Icon classes in FontAwesome : Taken from https://fontawesome.com/v4/icons/
-    # admin.add_view(VoteAdmin(Vote, db.session,category='Vote Management', menu_icon_type='fa', menu_icon_value='fa-tag'))
-    # admin.add_view(VoteSummaryAdmin(VoteSummary, db.session,category='Vote Management', menu_icon_type='fa', menu_icon_value='fa-tags'))
-    # admin.add_view(VoteSummaryHistoryAdmin(VoteSummaryHistory, db.session,category='Vote Management', menu_icon_type='fa', menu_icon_value='fa-history'))
-
-    # admin.add_view(ConfigAdminView(Config, db.session,category='Config Management', menu_icon_type='fa', menu_icon_value='fa-cogs'))
-    # admin.add_view(PointTeacherView(Points, db.session,category='Config Management', menu_icon_type='fa', menu_icon_value='fa-star-half-o'))
-    # admin.add_view(ContactAdminView(ContactRequest, db.session,category='Config Management', menu_icon_type='fa', menu_icon_value='fa-envelope-open-o'))
-    # admin.add_view(VoteCategoryAdmin(VoteCategory, db.session,category='Config Management', menu_icon_type='fa', menu_icon_value='fa-leaf'))
-
-    # admin.add_view(UserAdmin(User, db.session,category='User Management', menu_icon_type='fa', menu_icon_value='fa-user'))
-    # admin.add_view(RoleView(Role, db.session,category='User Management', menu_icon_type='fa', menu_icon_value='fa-users'))
-    # admin.add_view(AllowedStudentsAndStaffAdminView(AllowedStudentsAndStaff, db.session,category='User Management', menu_icon_type='fa', menu_icon_value='fa-shield'))
-
-
-###############################
-# Flask Admin Code - END
-###############################

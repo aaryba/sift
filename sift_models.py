@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-# from urllib.parse import urlparse, urljoin
 from flask_security import UserMixin, RoleMixin
-from datetime import datetime  # to auto insert dates
+from datetime import datetime  # to auto insert default dates
 import uuid
 
 
@@ -40,15 +39,12 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
-    # votes = db.relationship('Vote', backref='user', lazy='dynamic')
-
     # added to check authorization in home page
+
     def has_role(self, role_name):
         return any(role.name == role_name for role in self.roles)
 
     def __repr__(self): return f'User ID {self.id} : {self.email}'
-    # def __repr__(self):
-    #     return '<User %r>' % (self.email)
 
     # def __str__(self):
     #     # Using a list comprehension to create a string of attributes
@@ -64,7 +60,7 @@ class VoteCategory(db.Model):
         db.String(255), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     # votes = db.relationship('Vote', backref='vote_category', lazy='dynamic')
 
-    def __repr__(self): return f'VoteCat : {self.name}'
+    def __repr__(self): return f'VoteCategory : {self.name}'
 
     # def __str__(self):
     #     # Using a list comprehension to create a string of attributes
@@ -109,7 +105,7 @@ class VoteSummary(db.Model):
         db.Integer(), db.ForeignKey('user.id'), nullable=False)
     vote_positive_count = db.Column(db.Integer(), nullable=False)
     vote_negative_count = db.Column(db.Integer(), nullable=False)
-    # add totals too so that we can order in chart
+    # add totals too so that we can order in chart, this is the SIBS Score
     vote_pos_negative_sum = db.Column(db.Integer(), nullable=False)
     vote_needs_support_count = db.Column(db.Integer(), nullable=False)
     voted_for = db.relationship(
@@ -157,8 +153,12 @@ class Config(db.Model):
     school_name = db.Column(
         db.String(1000), nullable=False, default="Student Interaction Feedback Tool")
 
+    def __repr__(self):
+        return f'Vote ID : {self.id}'
 
 # Keep record of all points awarded to a Student for voting
+
+
 class Points(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
