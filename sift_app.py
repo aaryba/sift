@@ -26,7 +26,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
-import matplotlib.ticker as ticker
+import matplotlib.ticker as mticker
 # Use the 'Agg' backend for non-GUI rendering, fixes matplotlib warning related to threads
 matplotlib.use('Agg')
 # for date plotting on history chart on x axis
