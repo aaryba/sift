@@ -1,0 +1,200 @@
+{% extends 'admin/base.html' %}
+
+{% block body %}
+<script src="https://unpkg.com/htmx.org@1.5.0"></script>
+
+{% if current_user.is_authenticated %}
+
+<div class="jumbotron">
+  <div class="text-center">
+
+
+    <h1 class="display-5">Hi, {{ current_user.email.split('@')[0].capitalize() }}!</h1>
+
+
+    {% if current_user.has_role('admin') %}
+    <p>You are logged in as : Admin!</p>
+    {% elif current_user.has_role('teacher') %}
+    <p class="lead">You are logged in as : Teacher.</p>
+    {% else %}
+    <p class="lead">You are logged in as : Student.</p>
+    {% endif %}
+
+
+
+    <hr class="my-4" />SIFT allows you to vote for your peers in three categories of social behavior : Positive (Helpful
+    Social Leaders), Negative (Bullying Social Influences), and Possibly Lonely (Needing help in social support).
+    <!-- <br /><br />
+    » Positive / Helpful Social Leaders <img src="/static/pos.png" class="icon" /> « </br>
+    » Negative / Bullying Social Influences <img src="/static/neg.png" class="icon" /> «</br>
+    » Those who may be Lonely / Need Help in Social Support <img src="/static/needs_support.png" class="icon" /> «</br>
+    <br /> -->
+
+  </div>
+</div>
+
+
+
+
+<div class="separator">
+  <h2>Start Voting</h2>
+</div>
+
+<div class="text-center">
+
+
+  <p>
+
+    <button type="button" class="btn btn-secondary" data-container="body" data-html="true" data-toggle="popover"
+      data-trigger="focus" data-placement="top" data-content="Vote <img src='/static/pos.png' class='icon' />if you
+    have seen this person displaying good and kind behavior or standing up for someone who was being bullied. </br><a target='_blank'
+      href='https://www.youtube.com/watch?v=6syupxNg2TI'>Watch Video - What is good behavior (stopbullying.gov)</a>">
+      When to Vote <img src="/static/pos.png" class="icon" />
+    </button>
+
+
+
+    <button type="button" class="btn btn-secondary" data-container="body" data-html="true" data-toggle="popover"
+      data-trigger="focus" data-placement="top"
+      data-content="Vote <img src='/static/neg.png' class='icon' />if you have noticed this person displaying negative behavior or bullying other students in any form (verbal, racial, physical, or online). </br><a target='_blank' href='https://www.youtube.com/watch?v=6gi3f3E1D14'>Watch Video - Teasing vs Bullying (stopbullying.gov)</a>">When
+      to Vote <img src="/static/neg.png" class="icon" />
+    </button>
+    <!-- <a href='https://www.youtube.com/watch?v=6gi3f3E1D14'>Watch Video</a> -->
+
+    <button type="button" class="btn btn-secondary" data-container="body" data-html="true" data-toggle="popover"
+      data-trigger="focus" data-placement="top"
+      data-content="Vote <img src='/static/needs_support.png' class='icon' />if you have noticed that this student is lonely, being targeted, or has trouble making friends.">
+      When to Vote <img src="/static/needs_support.png" class="icon" />
+    </button>
+
+  </p>
+
+  <h5>Enter Email/ Name of the person you would like to choose :</h5>
+
+  <input type="text" id="search" placeholder="Enter name" oninput="searchUsers()" />
+  <style>
+    .table-container {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .table {
+      width: 50%;
+      height: 100%;
+    }
+  </style>
+
+  <!-- <ul id="results"></ul> -->
+  <div id="results" class="table-container">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <!-- <tr>
+                <th>Email</th>
+                <th>Click Icons to Vote</th>
+            </tr> -->
+      </thead>
+      <tbody>
+        <!-- Rows will be inserted here -->
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+
+
+{% if current_user.has_role('admin') %}
+
+<div class="separator">
+  <h2>Administrator Advanced Options</h2>
+</div>
+
+
+<!-- Bootstrap Reference https://getbootstrap.com/docs/4.2/components/card/ -->
+<div class="container mt-5">
+  <div class="row cards-container">
+    <div class="col-md-4">
+      <div class="card">
+        <img src="/static/images/admin_card_1.png" class="card-img-top" alt="..." style="width: 350px; height: 300px;">
+        <div class="card-body">
+          <h5 class="card-title">#1 : Onboard New Students</h5>
+          <p class="card-text">Upload a CSV file of Students, Teachers, and their corresponding roles.
+            <br><a href="/static/sample_data/demo_school_data.csv">Download Sample
+              CSV</a>
+
+
+          <form id="uploadForm" method="post" enctype="multipart/form-data" class="form-container">
+            <div class="form-group">
+              <input type="file" class="form-control-file" id="fileInput" name="file" required></br>
+              <button type="button" class="btn btn-secondary btn-sm" style="width: 250px;"
+                onclick="uploadFile()">Upload</button>
+            </div>
+          </form>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <img src="/static/images/admin_card_2.png" class="card-img-top" alt="..." style="width: 350px; height: 300px;">
+        <div class="card-body">
+          <h5 class="card-title">#2 : Start New Voting Cycle</h5>
+          <p class="card-text">Takes a snapshot of the current Votes and makes the system ready for a new cycle
+            (Semester).</p>
+          <br><br>
+          <a class="btn btn-secondary btn-sm" style="width: 250px;"
+            onclick="justDoGetAndShowMessage('{{ url_for('createsnapshot') }}')" href="#" role="button">Start Next
+            Cycle</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <img src="/static/images/admin_card_3.png" class="card-img-top" alt="..." style="width: 350px; height: 300px;">
+        <div class="card-body">
+          <h5 class="card-title">#3 : System Reset</h5>
+          <p class="card-text">Resets the system to its default state. All Voting records and reward points earned by
+            the students are DELETED.
+            <br><br>Student accounts are NOT deleted.
+          </p>
+          <a class="btn btn-secondary btn-sm" style="width: 250px;"
+            onclick="justDoGetAndShowMessage('{{ url_for('resetvotes') }}')" href="#" role="button">Delete All Votes and
+            Points</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endif %}
+
+{% else %}
+<div class="jumbotron">
+
+  <h1 class="display-5">Hi, Visitor!</h1>
+  <p class="lead">
+    Welcome to the Student Interaction Feedback Tool (SIFT)!
+  </p>
+  <hr class="my-4" />SIFT allows you to vote for your peers in three categories of social behavior
+  <br />
+  <br />
+  <ul>
+    <li>
+      Positive / Helpful Social Leaders <img src="/static/pos.png" class="icon" />
+    </li>
+    <li>
+      Negative / Bullying Social Influences <img src="/static/neg.png" class="icon" />
+    </li>
+    <li>
+      Those who may be Lonely / Need Help in Social Support <img src="/static/needs_support.png" class="icon" />
+    </li>
+  </ul>
+  <p>Login or register to get started.</p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

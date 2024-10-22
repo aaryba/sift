@@ -1,0 +1,141 @@
+{% extends 'admin/base.html' %}
+
+{% block body %}
+<script src="https://unpkg.com/htmx.org@1.5.0"></script>
+<!-- sift utiliy JS , passing current DTM to make sure browser doesnt cache JS -->
+<!-- <script src="/static/scripts/sift_scripts.js?{{ datetime.datetime.now() }}"></script> -->
+
+
+
+<div class="jumbotron_and_charts">
+
+  <div class="jumbotron">
+
+    <div class="text-center">
+      <h1 class="display-5">Sources</h1>
+      <hr class="my-4" />
+      <p>The following sources were used citing various statistics across the app</p>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<!-- Bootstrap Table : https://getbootstrap.com/docs/4.2/content/tables/ -->
+<table class="table table-sm table-striped table-hover">
+  <thead class="thead-light">
+    <tr>
+      <th style="width: 50px;" scope="col">#</th>
+      <th scope="col">Source</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>
+        <a href="https://pdf.eu-jer.com/EU-JER_12_3_1377.pdf" target="_blank">
+          European Journal of Educational Research - Bullying Prevention
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>
+        <a href="https://era.library.ualberta.ca/items/30301c23-9aff-44b2-bc98-0cc946055d5a/view/d2c4afc7-827f-4a19-9513-9b16e4f27b09/Chan_Ellis_202106_PhD.pdf"
+          target="_blank">
+          Journal of School Psychology- Understanding of Bullying
+        </a>
+
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>
+        <a href="https://ncbi.nlm.nih.gov/pmc/articles/PMC4552909/" target="_blank">
+          National Center for Biotechnology Information - Long-term effects of bullying
+        </a>
+
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">4</th>
+      <td>
+        <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8541967/" target="_blank">
+          National Center for Biotechnology Information - Potential of Anti-Bullying efforts
+        </a>
+
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">5</th>
+      <td>
+        <a href="https://nces.ed.gov/whatsnew/press_releases/1_17_2024.asp" target="_blank">
+          National Center for Educational Statistics - Bullying Prevention in Schools
+        </a>
+
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">6</th>
+      <td>
+        <a href="https://nces.ed.gov/pubs2024/2024109.pdf" target="_blank">
+          NCES - Student Reports of Bullying
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">7</th>
+      <td>
+
+        <a href="https://nces.ed.gov/surveys/spp/results.asp#After-School%20Programsadditional:~:text=How%20often%20did%20selected%20student%20behaviors%20occur%20at%20school%3F"
+          target="_blank">
+          NCES - School Pulse Panel
+        </a>
+
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">8</th>
+      <td>
+        <a href="https://nces.ed.gov/pubs2024/2024043.pdf" target="_blank">
+          NCES - Crime, Violence, Discipline, and Safety in U.S. Public Schools
+        </a>
+
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">9</th>
+      <td>
+        <a href="https://www.apa.org/topics/bullyin" target="_blank">
+          American Psychological Association - Bullying and Mental Health
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">10</th>
+      <td>
+        <a href="https://www.cdc.gov/youth-violence/about/about-bullying.html" target="_blank">
+          Centers for Disease Control and Prevention - About
+          Bullying
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">11</th>
+      <td>
+        <a href="https://www.nimh.nih.gov/news/science-news/2013/bullying-exerts-psychiatric-effects-into-adulthood"
+          target="_blank">
+          National Institute of Mental Health - Effects of
+          Bullying
+        </a>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+{% endblock %}
